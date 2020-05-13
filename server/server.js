@@ -192,7 +192,9 @@ function startApollo(db) {
     return new ApolloServer({
         typeDefs,
         resolvers,
-        context: ({ req, connection }) => (connection ? null : ({ userId: req.headers.authorization }))
+        context: ({ req, connection }) => (connection ? null : ({ userId: req.headers.authorization })),
+        introspection: true,
+        playground: true
     });
 }
 

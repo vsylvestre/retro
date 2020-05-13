@@ -9,12 +9,16 @@ import { setContext } from 'apollo-link-context';
 export default function useApolloClient() {
     const cache = new InMemoryCache();
 
+    const getURI = (protocol) => "production"
+        ? `${protocol}s://${window.location.hostname}/graphql`
+        : `${protocol}://${window.location.hostname}:${process.env.PORT || 4000}/graphql`;
+
     const httpLink = new HttpLink({
-        uri: `${window.location.protocol}//${window.location.hostname}:${process.env.PORT || 4000}/graphql`
+        uri: getURI('http')
     });
 
     const websocketLink = new WebSocketLink({
-        uri: `ws://${window.location.hostname}:${process.env.PORT || 4000}/graphql`,
+        uri: getURI('ws'),
         options: {
             reconnect: true
         }
