@@ -1,18 +1,20 @@
 import * as React from "react";
 import { gql } from "apollo-boost";
 import { useSubscription, useQuery } from "@apollo/react-hooks";
+import { Context } from "../Context";
 import ColumnCard from "./ColumnCard";
 import ColumnInput from "./ColumnInput";
 import CardType from "./CardType";
 
 import "./Column.css";
+import Steps from "../Steps";
 
 type ColumnProps = {
     category: string
 };
 
 const GET_CARDS = gql`
-    query {
+    query getCards {
         cards {
             id
             type
@@ -45,7 +47,18 @@ export default function Column({ category }: ColumnProps) {
 
     // First, we load any existing cards, in case the user that
     // arrives is late to the game!
-    const { data: getCards } = useQuery(GET_CARDS);
+    const { data: getCards, refetch } = useQuery(GET_CARDS);
+
+    // Also, when we reveal the cards, we'll fetch them again
+    // so that all users see their cards in the same order. That's
+    // why we need the currentStep
+    const { currentStep } = React.useContext(Context);
+
+    React.useEffect(() => {
+        if (currentStep === Steps.REVEAL) {
+            refetch();
+        }
+    }, [currentStep]);
 
     React.useEffect(() => {
         if (getCards && getCards.cards) {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useSubscription, useQuery } from "@apollo/react-hooks";
+import { useSubscription, useLazyQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import Steps from "./Steps";
 
@@ -21,11 +21,20 @@ const STEP_CHANGED_SUBSCRIPTION = gql`
 
 export const Context = React.createContext<ContextType>({ currentStep: 0 });
 
-export default function ContextProvider({ children }: React.PropsWithChildren<any>) {
-    const { data: getStep } = useQuery(GET_STEP);
+export default function ContextProvider({ hasUser, children }: React.PropsWithChildren<{ hasUser: boolean }>) {
+    const [getStep, { data: getStepResult }] = useLazyQuery(GET_STEP);
 
     const { data: stepChangedEv } = useSubscription(STEP_CHANGED_SUBSCRIPTION);
-    const currentStep = stepChangedEv?.stepChanged ?? getStep?.step ?? 0;
+    const currentStep = stepChangedEv?.stepChanged ?? getStepResult?.step ?? 0;
+
+    React.useEffect(() => {
+        console.log(hasUser);
+        if (hasUser) {
+            getStep();
+        }
+    }, [hasUser, getStep]);
+
+    console.log(getStepResult, stepChangedEv, currentStep);
 
     return (
         <Context.Provider value={{ currentStep }}>

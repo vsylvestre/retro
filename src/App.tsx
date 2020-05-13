@@ -21,7 +21,7 @@ export default function App() {
 
     return (
         <ApolloProvider client={client}>
-            <ContextProvider>
+            <ContextProvider hasUser={hasUser}>
                 <Header />
                 {!hasUser
                     ? <Login setHasUser={setHasUser} />

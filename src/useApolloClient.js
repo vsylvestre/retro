@@ -9,7 +9,7 @@ import { setContext } from 'apollo-link-context';
 export default function useApolloClient() {
     const cache = new InMemoryCache();
 
-    const getURI = (protocol) => "production"
+    const getURI = (protocol) => process.env.NODE_ENV === "production"
         ? `${protocol}s://${window.location.hostname}/graphql`
         : `${protocol}://${window.location.hostname}:${process.env.PORT || 4000}/graphql`;
 

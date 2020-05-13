@@ -95,7 +95,7 @@ function startApollo(db) {
         Query: {
             users: async () => await db.collection("users").find({}).toArray(),
             cards: async () => await db.collection("cards").find({}).toArray(),
-            step: async () => await db.collection("rooms").findOne({}, { step: 1 }).step
+            step: async () => (await db.collection("rooms").findOne({})).step
         },
         Mutation: {
             login: async (_, args) => {
