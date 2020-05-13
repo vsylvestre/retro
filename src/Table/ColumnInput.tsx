@@ -68,7 +68,7 @@ export default function ColumnInput({ submitCard, type }: ColumnInputProps) {
         }
     };
 
-    return (
+    return currentStep > Steps.WRITE ? null : (
         <Card lessPadding>
             <div className="card-title">
                 {type[0] + type.substr(1).toLowerCase()}

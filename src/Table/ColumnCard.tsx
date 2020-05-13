@@ -56,7 +56,7 @@ export default function ColumnCard({ id, userId, type, initialText = '' }: CardP
         }
     }, [data]);
 
-    if (initialText.length === 0 && !data) {
+    if (initialText.length === 0 && !data || (data && data.cardUpdated.content.length === 0)) {
         return null;
     }
 

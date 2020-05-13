@@ -5,6 +5,7 @@
     margin: 30px;
     font-weight: 800;
     font-size: 20px;
+    z-index: 1;
 }
 
 .users .user {
