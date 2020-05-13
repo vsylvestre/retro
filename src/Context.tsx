@@ -28,13 +28,10 @@ export default function ContextProvider({ hasUser, children }: React.PropsWithCh
     const currentStep = stepChangedEv?.stepChanged ?? getStepResult?.step ?? 0;
 
     React.useEffect(() => {
-        console.log(hasUser);
         if (hasUser) {
             getStep();
         }
     }, [hasUser, getStep]);
-
-    console.log(getStepResult, stepChangedEv, currentStep);
 
     return (
         <Context.Provider value={{ currentStep }}>
