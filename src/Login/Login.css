@@ -1,0 +1,13 @@
+.login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.login input {
+    color: hsl(227, 29%, 65%);
+    font-size: 26px;
+    font-weight: 200;
+    line-height: 40px;
+}

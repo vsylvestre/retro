@@ -1,0 +1,33 @@
+.column .card .input {
+    padding: 10px 0;
+}
+
+.column .card:first-child {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.column .card:first-child .card-title {
+    width: 100%;
+    font-size: 24px;
+    font-weight: 500;
+    padding: 15px 0 12px;
+    color: hsla(0, 0%, 100%, 85%);
+}
+
+.column .card:first-child .input {
+    padding-right: 10px;
+    width: 90%;
+}
+
+.column .card:first-child .input textarea {
+    padding-left: 0;
+}
+
+.column .card:first-child .button {
+    flex: 0;
+    margin: 0;
+    align-self: flex-end;
+    margin-bottom: 15px;
+    margin-right: -5px;
+}

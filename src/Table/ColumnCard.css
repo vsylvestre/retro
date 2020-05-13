@@ -1,0 +1,63 @@
+.column .card {
+    position: relative;
+    width: 95%;
+    margin: 20px auto;
+}
+
+.column .card:not(.min) {
+    padding: 17px 30px 30px;
+    line-height: 1.5;
+}
+
+.column .card.min {
+    margin: 30px auto;
+}
+
+.card.blurry div:not(.tag) {
+    color: transparent;
+    text-shadow: 0 0 9px hsla(0, 0%, 100%, 0.65);
+}
+
+.card-delete {
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    color: var(--red-color);
+    opacity: 0;
+}
+
+.card:hover .card-delete {
+    opacity: 1;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px 4px 20px;
+    background-color: var(--primary-color);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: hsla(0, 0%, 100%, 0.42);
+}
+
+.tag:before {
+    content: '';
+    margin-left: -11px;
+    margin-right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.column:nth-child(1) .tag:before {
+    background-color: var(--red-color);
+}
+
+.column:nth-child(2) .tag:before {
+    background-color: var(--blue-color);
+}
+
+.column:nth-child(3) .tag:before {
+    background-color: var(--green-color);
+}

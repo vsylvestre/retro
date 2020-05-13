@@ -1,0 +1,14 @@
+.column {
+    flex: 1 0 33%;
+    padding: 0 15px;
+}
+
+.column .column-title {
+    font-size: 19px;
+    font-weight: 700;
+    width: 100%;
+    text-align: center;
+    padding: 30px 0 10px;
+    border-bottom: 1px solid var(--border-color);
+    color: hsl(225, 20%, 61%);
+}

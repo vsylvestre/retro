@@ -1,0 +1,6 @@
+/* Note that .textarea inherits from most styles from .input, in Input.css */
+
+.input textarea {
+    resize: none;
+    line-height: 25px;
+}

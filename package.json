@@ -1,0 +1,60 @@
+{
+    "name": "retro",
+    "version": "1.0.0",
+    "description": "A tool for sprint retrospectives.",
+    "main": "index.js",
+    "author": "Vincent Sylvestre",
+    "license": "MIT",
+    "private": false,
+    "scripts": {
+        "start": "concurrently \"react-scripts start\" \"node index.js\"",
+        "build": "react-scripts build",
+        "test": "react-scripts test --env=jsdom",
+        "eject": "react-scripts eject",
+        "heroku-postbuild": "react-scripts build"
+    },
+    "devDependencies": {
+        "apollo-server": "^2.12.0",
+        "concurrently": "^5.0.0",
+        "express": "^4.17.1",
+        "graphql": "^15.0.0",
+        "http": "^0.0.1-security",
+        "mongodb": "^3.5.7",
+        "node": "^12.8.1",
+        "path": "^0.12.7",
+        "typescript": "^3.8.3"
+    },
+    "dependencies": {
+        "@apollo/react-hooks": "^3.1.5",
+        "@chakra-ui/core": "^0.7.0",
+        "@emotion/core": "^10.0.28",
+        "@emotion/styled": "^10.0.27",
+        "@types/autosize": "^3.0.7",
+        "@types/jest": "^25.2.1",
+        "@types/node": "^13.13.5",
+        "@types/react": "^16.9.34",
+        "@types/react-dom": "^16.9.7",
+        "apollo-boost": "^0.4.7",
+        "apollo-client": "^2.6.8",
+        "apollo-link-context": "^1.0.20",
+        "apollo-link-ws": "^1.0.20",
+        "apollo-server-express": "^2.13.1",
+        "autosize": "^4.0.2",
+        "emotion-theming": "^10.0.27",
+        "feather-icons": "^4.28.0",
+        "react": "^16.12.0",
+        "react-dom": "^16.12.0",
+        "react-scripts": "^3.0.1",
+        "react-timer-hook": "^2.0.2",
+        "subscriptions-transport-ws": "^0.9.16"
+    },
+    "engines": {
+        "node": "11.x"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ]
+}

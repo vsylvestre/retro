@@ -1,0 +1,21 @@
+.title-container {
+    position: absolute;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 32px;
+    left: 0;
+}
+
+.title-container .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    border: 1px solid hsl(229, 34%, 24%);
+    border-radius: 18px;
+    padding: 0px 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
