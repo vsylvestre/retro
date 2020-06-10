@@ -1,8 +1,7 @@
 .card {
-    width: 400px;
     padding: 30px;
     background-color: hsl(230, 38%, 20%);
-    box-shadow: 0px 6px 18px 2px hsl(230, 85%, 5%);
+    box-shadow: var(--default-box-shadow);
     border-radius: 8px;
     margin: 20px 0;
 }

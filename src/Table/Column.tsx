@@ -45,7 +45,7 @@ const CARD_DELETED_SUBSCRIPTION = gql`
 export default function Column({ category }: ColumnProps) {
     const [cards, setCards] = React.useState<CardType[]>([]);
 
-    // First, we load any existing cards, in case the user that
+    // First, we load any existing cards, in case the user who
     // arrives is late to the game!
     const { data: getCards, refetch } = useQuery(GET_CARDS);
 

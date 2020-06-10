@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
+import { animated, useSpring } from "react-spring";
 import Input from "../_lib/Input";
 import Button from "../_lib/Button";
 import Card from "../_lib/Card";
@@ -21,6 +22,8 @@ export default function Login({ setHasUser }) {
     const [username, setUsername] = useState('')
     const [login, { data }] = useMutation(LOGIN_MUTATION, { variables: { username }});
 
+    const animationProps = useSpring({ opacity: 1, from: { opacity: 0 } });
+
     React.useEffect(() => {
         if (data) {
             localStorage.setItem("userId", data.login.id);
@@ -30,7 +33,7 @@ export default function Login({ setHasUser }) {
     }, [data]);
 
     return (
-        <div className="login">
+        <animated.div className="login" style={animationProps}>
             <Card>
                 <div style={{ padding: "0 10px", lineHeight: 1.5, maxWidth: "90%", fontWeight: 300, fontSize: 14 }}>
                     Type your name:
@@ -40,6 +43,6 @@ export default function Login({ setHasUser }) {
                     Enter
                 </Button>
             </Card>
-        </div>
+        </animated.div>
     );
 }

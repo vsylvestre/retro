@@ -13,12 +13,14 @@ function startApollo(db) {
 
     const typeDefs = gql`
         type Query {
+            room(id: String!): Room
             users: [User]
             cards: [Card]
             step: Int
         }
 
         type Mutation {
+            createRoom: Room
             login(username: String!): User
             addCard(type: String!): Card
             updateCard(id: String!, content: String!): Card
@@ -29,28 +31,31 @@ function startApollo(db) {
         }
 
         type Subscription {
-            userJoined: String
-            userLeft: String
+            userJoined: User
+            userLeft: User
             cardAdded(userId: String!, type: String!): Card
-            cardUpdated(type: String!, id: String!): Card
+            cardUpdated(id: String!): Card
             cardDeleted(type: String!): Card
-            stepChanged: Int
+            stepChanged: Room
         }
 
         type User {
             id: String!
             name: String!
+            roomId: String!
             role: String
         }
 
         type Room {
             id: String!
             step: Int
+            hasAdmin: Boolean
         }
 
         type Card {
             id: String!
             type: String!
+            roomId: String!
             userId: String
             content: String
         }
@@ -59,69 +64,101 @@ function startApollo(db) {
     const resolvers = {
         Subscription: {
             userJoined: {
-                subscribe: () => pubsub.asyncIterator([USER_JOINED])
+                subscribe: withFilter(
+                    () => pubsub.asyncIterator([USER_JOINED]),
+                    (payload, _, context) => payload.userJoined.roomId == context.roomId
+                )
             },
             userLeft : {
-                subscribe: () => pubsub.asyncIterator([USER_LEFT])
+                subscribe: withFilter(
+                    () => pubsub.asyncIterator([USER_LEFT]),
+                    (payload, _, context) => payload.userLeft.roomId == context.roomId
+                )
             },
             cardAdded: {
                 subscribe: withFilter(
                     () => pubsub.asyncIterator([CARD_ADDED]),
-                    (payload, variables) => {
-                        const { type, userId } = payload.cardAdded;
-                        return type === variables.type && userId !== variables.userId;
+                    (payload, variables, context) => {
+                        const { roomId, type, userId } = payload.cardAdded;
+                        return type === variables.type && roomId == context.roomId && userId !== variables.userId;
                     }
                 )
             },
             cardUpdated: {
                 subscribe: withFilter(
                     () => pubsub.asyncIterator([CARD_UPDATED]),
-                    (payload, variables) => {
-                        const { type, id } = payload.cardUpdated;
-                        return type === variables.type && id === variables.id;
-                    }
+                    (payload, variables) => payload.cardUpdated.id === variables.id
                 )
             },
             cardDeleted: {
                 subscribe: withFilter(
                     () => pubsub.asyncIterator([CARD_DELETED]),
-                    (payload, variables) => payload.cardDeleted.type === variables.type
+                    (payload, variables, context) => {
+                        const { roomId, type } = payload.cardDeleted;
+                        return type === variables.type && roomId == context.roomId;
+                    }
                 )
             },
             stepChanged: {
-                subscribe: () => pubsub.asyncIterator([STEP_CHANGED])
+                subscribe: withFilter(
+                    () => pubsub.asyncIterator([STEP_CHANGED]),
+                    (payload, _, context) => {
+                        // Here, stepChanged.id refers to the room's ID
+                        return payload.stepChanged.id == context.roomId;
+                    }
+                )
             }
         },
         Query: {
-            users: async () => await db.collection("users").find({}).toArray(),
-            cards: async () => await db.collection("cards").find({}).toArray(),
-            step: async () => (await db.collection("rooms").findOne({})).step
+            room: async (_, args) => {
+                try {
+                    const roomId = ObjectId(args.id);
+                    return await db.collection("rooms").findOne({ id: roomId });
+                } catch {
+                    return null;
+                }
+            },
+            users: async (_, args, context) => await db.collection("users").find({ roomId: context.roomId }).toArray(),
+            cards: async (_, args, context) => await db.collection("cards").find({ roomId: context.roomId }).toArray(),
+            step: async (_, args, context) => (await db.collection("rooms").findOne({ id: ObjectId(context.roomId) })).step
         },
         Mutation: {
-            login: async (_, args) => {
-                // First, if it's the first user that's logging into
-                // the app, we create the new room
-                const findRoomRes = await db.collection("rooms").findOne({});
-                if (!findRoomRes) {
-                    const room = { id: ObjectId(), step: 0 };
-                    const { result: insertRoomRes } = await db.collection("rooms").insertOne(room);
-                    if (!insertRoomRes) {
-                        return new Error("Couldn't create a new room");
-                    }
+            createRoom: async () => {
+                const room = { id: ObjectId(), step: 0 };
+                const { result } = await db.collection("rooms").insertOne(room);
+                if (!result.ok) {
+                    return new Error("Couldn't create a new room");
                 }
-                // Then, we insert the user into the DB
-                const user = { id: ObjectId(), name: args.username, role: findRoomRes ? "PARTICIPANT" : "ADMIN" };
+                return room;
+            },
+            login: async (_, args, context) => {
+                // First, we find the room that the user is joining in.
+                // At this point, the room verification process should
+                // already be done - but we still send back an error just
+                // in case
+                const findRoomRes = await db.collection("rooms").findOne({ id: ObjectId(context.roomId) });
+                if (!findRoomRes) {
+                    return new Error("Couldn't find the room");
+                }
+                // Then, we insert the user into the DB. If they're
+                // the first user to join the room, we set the room as
+                // having an administrator, and we assign the ADMIN
+                // room to that user
+                const user = { id: ObjectId(), name: args.username, roomId: context.roomId, role: findRoomRes.hasAdmin ? "PARTICIPANT" : "ADMIN" };
+                if (!findRoomRes.hasAdmin) {
+                    await db.collection("rooms").findOneAndUpdate({ id: ObjectId(context.roomId) }, { $set: { hasAdmin: true } })
+                }
                 const { result: insertUserRes } = await db.collection("users").insertOne(user);
                 if (!insertUserRes.ok) {
-                    return new Error("Couldn't join the room");
+                    return new Error("Couldn't create new user");
                 }
                 // We publish a USER_JOINED event so that other users that
                 // are already in the room can be notified
-                await pubsub.publish(USER_JOINED, { userJoined: user.name });
+                await pubsub.publish(USER_JOINED, { userJoined: user });
                 return user;
             },
             addCard: async (_, args, context) => {
-                const card = { id: ObjectId(), type: args.type, userId: context.userId };
+                const card = { id: ObjectId(), type: args.type, roomId: context.roomId, userId: context.userId };
                 const { result, ops } = await db.collection("cards").insertOne(card);
                 if (!result.ok) {
                     return new Error("Couldn't create the card");
@@ -140,6 +177,7 @@ function startApollo(db) {
                     id: args.id,
                     type: result.value.type,
                     userId: result.value.userId,
+                    roomId: result.value.roomId,
                     content: args.content
                 };
                 // We publish a CARD_UPDATED event so that other users see
@@ -148,7 +186,7 @@ function startApollo(db) {
                 return card;
             },
             deleteCard: async (_, args) => {
-                const card = await db.collection("cards").findOne( { id: ObjectId(args.id )});
+                const card = await db.collection("cards").findOne({ id: ObjectId(args.id) });
                 const { result, ops } = await db.collection("cards").deleteOne({ id: ObjectId(args.id) });
                 if (!result.ok) {
                     return new Error("Couldn't delete the card");
@@ -158,14 +196,15 @@ function startApollo(db) {
                 await pubsub.publish(CARD_DELETED, { cardDeleted: card });
                 return args.id;
             },
-            switchSteps: async () => {
-                const result = await db.collection("rooms").findOneAndUpdate({}, { $inc: { step: 1 }});
+            switchSteps: async (_, args, context) => {
+                const result = await db.collection("rooms").findOneAndUpdate({ id: ObjectId(context.roomId) }, { $inc: { step: 1 }});
                 if (!result.ok) {
                     return new Error("Couldn't increment step value");
                 }
+                const updatedRoom = result.value;
                 // We publish a STEP_CHANGED event so that all users have
                 // their screen updated with the new step
-                await pubsub.publish(STEP_CHANGED, { stepChanged: result.value.step + 1 });
+                await pubsub.publish(STEP_CHANGED, { stepChanged: { ...updatedRoom, step: updatedRoom.step + 1 } });
                 return true;
             },
             leaveRoom: async (_, args, context) => {
@@ -177,7 +216,7 @@ function startApollo(db) {
                 } else {
                     await db.collection("users").deleteOne({ id: ObjectId(context.userId) });
                 }
-                await pubsub.publish(USER_LEFT, { userLeft: user.name });
+                await pubsub.publish(USER_LEFT, { userLeft: user });
                 return true;
             },
             clearRoom: async () => {
@@ -192,7 +231,16 @@ function startApollo(db) {
     return new ApolloServer({
         typeDefs,
         resolvers,
-        context: ({ req, connection }) => (connection ? null : ({ userId: req.headers.authorization })),
+        context: ({ req, connection }) => {
+            if (connection) {
+                const { room: roomId, user: userId } = connection.context;
+                return { roomId, userId };
+            }
+            return {
+                userId: req.headers.user,
+                roomId: req.headers.room
+            };
+        },
         introspection: true,
         playground: true
     });

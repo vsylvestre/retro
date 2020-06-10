@@ -69,7 +69,7 @@ export default function ColumnInput({ submitCard, type }: ColumnInputProps) {
     };
 
     return currentStep > Steps.WRITE ? null : (
-        <Card lessPadding>
+        <Card lessPadding width="95%">
             <div className="card-title">
                 {type[0] + type.substr(1).toLowerCase()}
             </div>
@@ -82,6 +82,7 @@ export default function ColumnInput({ submitCard, type }: ColumnInputProps) {
                         backgroundColor="black"
                         borderRadius="3px"
                         fontSize="13px"
+                        color="var(--text-default-color)"
                     >
                         ⏱
                     </Tooltip>

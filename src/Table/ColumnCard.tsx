@@ -14,8 +14,8 @@ type CardProps = {
 };
 
 const CARD_UPDATED_SUBSCRIPTION = gql`
-    subscription onCardUpdated($type: String!, $id: String!) {
-        cardUpdated(type: $type, id: $id) {
+    subscription onCardUpdated($id: String!) {
+        cardUpdated(id: $id) {
             content
         }
     }
@@ -46,7 +46,7 @@ export default function ColumnCard({ id, userId, type, initialText = '' }: CardP
     const [text, setText] = React.useState(initialText);
 
     // Here we subscribe to updates on the card
-    const { data } = useSubscription(CARD_UPDATED_SUBSCRIPTION, { variables: { type, id } });
+    const { data } = useSubscription(CARD_UPDATED_SUBSCRIPTION, { variables: { id } });
 
     const [deleteCard] = useMutation(DELETE_CARD_MUTATION, { variables: { id } });
 
@@ -69,7 +69,7 @@ export default function ColumnCard({ id, userId, type, initialText = '' }: CardP
         );
 
     return (
-        <div key={id} className={`card${!belongsToUser && blurred ? ' blurry' : ''}`}>
+        <div key={id} className={`card${!belongsToUser && blurred ? ' blurry' : ''}`} style={{ width: "95%" }}>
             {belongsToUser && (
                 <button className="card-delete" style={{ backgroundColor: "transparent", border: "none" }} onClick={() => deleteCard()}>
                     <Icon name="trash" />
