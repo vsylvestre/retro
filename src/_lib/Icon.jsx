@@ -1,12 +1,12 @@
 import React, { useLayoutEffect } from "react";
 
-const Icon = ({ name, width = 16, height = 16 }) => {
+const Icon = ({ name, size = 16 }) => {
     useLayoutEffect(() => {
         window.feather.replace();
     }, []);
 
     return (
-        <i data-feather={name} style={{ width, height }} />
+        <i data-feather={name} style={{ width: size, height: size }} />
     );
 };
 

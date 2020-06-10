@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useSubscription, useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { Tooltip } from "@chakra-ui/core";
+import { Context } from "../Context";
 
 import "./Users.css";
 
@@ -22,14 +23,18 @@ const LEAVE_ROOM_MUTATION = gql`
 `;
 
 const USER_JOINED_SUBSCRIPTION = gql`
-    subscription {
-        userJoined
+    subscription userJoined {
+        userJoined {
+            name
+        }
     }
 `;
 
 const USER_LEFT_SUBSCRIPTION = gql`
-    subscription {
-        userLeft
+    subscription userLeft {
+        userLeft {
+            name
+        }
     }
 `;
 
@@ -59,13 +64,13 @@ export default function Users() {
 
     React.useEffect(() => {
         if (userJoinedEv) {
-            setUsers(u => [...u, { name: userJoinedEv.userJoined }]);
+            setUsers(u => [...u, { name: userJoinedEv.userJoined.name }]);
         }
     }, [userJoinedEv]);
 
     React.useEffect(() => {
         if (userLeftEv) {
-            setUsers(u => u.filter(({ name }) => name !== userLeftEv.userLeft));
+            setUsers(u => u.filter(({ name }) => name !== userLeftEv.userLeft.name));
         }
     }, [userLeftEv]);
 
@@ -84,6 +89,7 @@ export default function Users() {
                     backgroundColor="black"
                     borderRadius="3px"
                     fontSize="12px"
+                    color="var(--text-default-color)"
                 >
                     <div className="user">
                         {user.name[0].toUpperCase()}

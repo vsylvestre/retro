@@ -9,6 +9,11 @@ type InputProps = {
     handleFocus?: (ev: React.ChangeEvent<HTMLInputElement>) => void
     header?: string
     placeholder?: string
+    readonly?: boolean
+};
+
+const defaultProps = {
+    readonly: false
 };
 
 /**
@@ -18,7 +23,7 @@ type InputProps = {
  */
 function Input(props: InputProps) {
     const {
-        handleChange, handleFocus, header, placeholder, submit, value
+        handleChange, handleFocus, header, placeholder, readonly, submit, value
     } = props;
 
     const inputRef = React.useRef(null);
@@ -52,9 +57,12 @@ function Input(props: InputProps) {
                 onFocus={handleFocus}
                 placeholder={placeholder}
                 value={value}
+                readOnly={readonly}
             />
         </div>
     );
 }
+
+Input.defaultProps = defaultProps;
 
 export default Input;

@@ -6,6 +6,7 @@ import useFileDownload from "./useFileDownload";
 import Icon from "../_lib/Icon";
 import Button, { ButtonType } from "../_lib/Button";
 import MainAction from "./MainAction";
+import ShareLink from "./ShareLink";
 import Steps from "../Steps";
 import Timer from "./Timer";
 
@@ -34,8 +35,9 @@ export default function Footer() {
             </div>
             <div className="footer-right">
                 <Button type={ButtonType.CircularLarge} handleClick={() => loadCards()}>
-                    <Icon name="download" width={17} height={17} />
+                    <Icon name="download" size={17} />
                 </Button>
+                <ShareLink />
                 <MainAction currentStep={currentStep} />
             </div>
         </div>
