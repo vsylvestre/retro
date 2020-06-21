@@ -1,15 +1,13 @@
 import * as React from "react";
 import Column from "./Column";
-import { gql } from 'apollo-boost';
-import { useSubscription } from '@apollo/react-hooks';
 
-import "./Table.css";
+import "./Room.css";
 
-type TableProps = {
+type RoomProps = {
     categories: string[]
 };
 
-export default function Table({ categories }: TableProps) {
+export default function Room({ categories }: RoomProps) {
     const columnEls: JSX.Element[] = [];
 
     categories.forEach((category) => {
@@ -17,7 +15,7 @@ export default function Table({ categories }: TableProps) {
     });
 
     return (
-        <div className="table">
+        <div className="room">
             {columnEls}
         </div>
     );

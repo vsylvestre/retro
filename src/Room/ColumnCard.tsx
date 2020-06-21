@@ -28,14 +28,13 @@ const DELETE_CARD_MUTATION = gql`
 `;
 
 export default function ColumnCard({ id, userId, type, initialText = '' }: CardProps) {
-    // We get the current user ID from the localStorage, which
-    // was set when the user logged in. We will use that to blur
-    // cards that don't belong to the current user
-    const belongsToUser = React.useMemo(() => !userId || userId === localStorage.getItem("userId"), [userId]);
+    // We get the current user ID from our context. We will use that
+    // to blur cards that don't belong to the current user
+    const { user, currentStep } = React.useContext(Context);
+    const belongsToUser = React.useMemo(() => !userId || userId === user?.id, [userId]);
 
     // We also need the current step, in order to know whether
     // we're ready to reveal the cards to all users
-    const { currentStep } = React.useContext(Context);
     const blurred = currentStep < 2;
 
     // Everytime we get an update for this card in particular, we

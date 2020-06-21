@@ -44,7 +44,7 @@ function Textarea(props: TextareaProps) {
         if (textareaRef.current) {
             autosize(textareaRef.current as any);
         }
-    }, [textareaRef.current]);
+    }, []);
 
     React.useEffect(() => {
         if (!value || value.length === 0) {

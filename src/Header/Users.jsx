@@ -1,8 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useSubscription, useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import { Tooltip } from "@chakra-ui/core";
-import { Context } from "../Context";
 
 import "./Users.css";
 
@@ -60,7 +59,7 @@ export default function Users() {
     React.useEffect(() => {
         window.addEventListener("beforeunload", unload);
         return () => window.removeEventListener("beforeunload", unload);
-    }, []);
+    }, [unload]);
 
     React.useEffect(() => {
         if (userJoinedEv) {

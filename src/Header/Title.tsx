@@ -18,17 +18,19 @@ function getTitle(currentStep: number) {
 }
 
 const Title = () => {
-    const { currentStep } = React.useContext(Context);
+    const { currentStep, room } = React.useContext(Context);
 
     return (
         <div className="title-container">
             <div className="title">
-                {currentStep === 0 ? getTitle(currentStep) : (
-                    <>
-                        Time to
-                        {" "}
-                        {getTitle(currentStep).toLowerCase()}
-                    </>
+                {room?.done ? "The meeting is over" : (
+                    currentStep === 0 ? getTitle(currentStep) : (
+                        <>
+                            Time to
+                            {" "}
+                            {getTitle(currentStep).toLowerCase()}
+                        </>
+                    )
                 )}
             </div>
         </div>

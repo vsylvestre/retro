@@ -43,6 +43,7 @@
         "autosize": "^4.0.2",
         "emotion-theming": "^10.0.27",
         "feather-icons": "^4.28.0",
+        "moment": "^2.27.0",
         "react": "^16.12.0",
         "react-dom": "^16.12.0",
         "react-scripts": "^3.4.1",

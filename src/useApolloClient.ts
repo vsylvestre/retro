@@ -1,15 +1,15 @@
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { split, concat } from "apollo-link";
+import { split } from "apollo-link";
 import { HttpLink } from "apollo-link-http";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 import { setContext } from "apollo-link-context";
 
-export default function useApolloClient() {
+export default function useApolloClient(user: string | null, room: string | null) {
     const cache = new InMemoryCache();
 
-    const getURI = (protocol) => process.env.NODE_ENV === "production"
+    const getURI = (protocol: string) => process.env.NODE_ENV === "production"
         ? `${protocol}s://${window.location.hostname}/graphql`
         : `${protocol}://${window.location.hostname}:${process.env.PORT || 4000}/graphql`;
 
@@ -21,10 +21,7 @@ export default function useApolloClient() {
         uri: getURI("ws"),
         options: {
             reconnect: true,
-            connectionParams: {
-                room: localStorage.getItem("roomId"),
-                user: localStorage.getItem("userId")
-            }
+            connectionParams: { room, user }
         }
     });
 
@@ -45,8 +42,8 @@ export default function useApolloClient() {
         return {
             headers: {
                 ...headers,
-                "room": localStorage.getItem("roomId"),
-                "user": localStorage.getItem("userId")
+                "room": room,
+                "user": user
             }
         }
     });

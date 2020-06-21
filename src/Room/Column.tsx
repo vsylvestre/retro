@@ -52,7 +52,7 @@ export default function Column({ category }: ColumnProps) {
     // Also, when we reveal the cards, we'll fetch them again
     // so that all users see their cards in the same order. That's
     // why we need the currentStep
-    const { currentStep } = React.useContext(Context);
+    const { currentStep, user } = React.useContext(Context);
 
     React.useEffect(() => {
         if (currentStep === Steps.REVEAL) {
@@ -71,7 +71,7 @@ export default function Column({ category }: ColumnProps) {
     // current user (and we'll filter on the server). Those cards
     // are added when the user submits (see ColumnInput.tsx).
     const { data: cardAddedEv } = useSubscription(CARD_ADDED_SUBSCRIPTION, {
-        variables: { type: category, userId: localStorage.getItem("userId") }
+        variables: { type: category, userId: user?.id }
     });
 
     React.useEffect(() => {
