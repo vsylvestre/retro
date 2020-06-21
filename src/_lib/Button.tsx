@@ -10,7 +10,7 @@ export enum ButtonType {
 };
 
 type ButtonProps = {
-    handleClick: (ev: React.MouseEvent<HTMLButtonElement>) => void
+    handleClick: (ev?: React.MouseEvent<HTMLButtonElement>) => void
     children: React.ReactNode
     type?: ButtonType
 };

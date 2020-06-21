@@ -1,0 +1,10 @@
+.modal {
+    padding: 10px;
+    line-height: 1.4;
+    font-weight: 300;
+    font-size: 15px;
+}
+
+.modal .button {
+    margin-top: 0;
+}

@@ -1,69 +1,41 @@
 import React, { useState } from "react";
-import { useMutation, useLazyQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { animated, useSpring } from "react-spring";
 import { gql } from "apollo-boost";
+import RoomType from "../Room/RoomType";
 import Button from "../_lib/Button";
 import Card from "../_lib/Card";
 import Input from "../_lib/Input";
 
-import "./Menu.css";
+import "./JoinRoom.css";
 
-type MenuProps = {
-    setRoom: (id: string) => void
+type JoinRoomProps = {
+    getRoom: (input: { variables: { id: string } }) => void
+    setRoom: (room: RoomType) => void
+    hasError: boolean
 };
-
-const GET_ROOM = gql`
-    query getRoom($id: String!) {
-        room(id: $id) {
-            id
-        }
-    }
-`;
 
 const CREATE_ROOM_MUTATION = gql`
     mutation {
         createRoom {
             id
+            step
+            createdAt
+            done
         }
     }
 `;
 
-const flexboxStyle: React.CSSProperties = {
-    display: "flex",
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "50%"
-};
+export default function JoinRoom({ getRoom, setRoom, hasError }: JoinRoomProps) {
+    const [roomId, setRoomId] = useState("");
 
-export default function Menu({ setRoom }: MenuProps) {
-    const [roomId, setRoomId] = useState('');
-    const [hasError, setHasError] = useState(false);
-
-    const [getRoom, { data: getRoomData }] = useLazyQuery(GET_ROOM);
     const [createRoom, { data: createRoomData }] = useMutation(CREATE_ROOM_MUTATION);
 
     const animationProps = useSpring({ opacity: 1, from: { opacity: 0 } });
 
     React.useEffect(() => {
-        if (window.location.pathname !== "/") {
-            getRoom({ variables: { id: window.location.pathname.substr(1) } });
-        }
-    }, []);
-
-    React.useEffect(() => {
-        if (getRoomData) {
-            if (getRoomData.room) {
-                setRoom(getRoomData.room.id);
-            } else {
-                setHasError(true);
-            }
-        }
-    }, [getRoomData]);
-
-    React.useEffect(() => {
         if (createRoomData) {
-            setRoom(createRoomData.createRoom.id);
+            setRoom(createRoomData.createRoom);
         }
     }, [createRoomData]);
 

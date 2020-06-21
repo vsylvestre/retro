@@ -1,23 +1,20 @@
 import * as React from "react";
-import { useSubscription, useLazyQuery } from "@apollo/react-hooks";
+import { useSubscription } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import Steps from "./Steps";
+import RoomType from "./Room/RoomType";
+import UserType from "./UserType";
 
 type ContextType = {
     currentStep: Steps
-    room: string | null
+    room: RoomType | null
+    user: UserType | null
 };
 
 type ContextProviderProps = {
-    hasUser: boolean
-    room: string | null
+    room: RoomType | null
+    user: UserType | null
 };
-
-const GET_STEP = gql`
-    query {
-        step
-    }
-`;
 
 const STEP_CHANGED_SUBSCRIPTION = gql`
     subscription {
@@ -27,29 +24,14 @@ const STEP_CHANGED_SUBSCRIPTION = gql`
     }
 `;
 
-export const Context = React.createContext<ContextType>({ currentStep: 0, room: null });
+export const Context = React.createContext<ContextType>({ currentStep: 0, user: null, room: null });
 
-export default function ContextProvider({ hasUser, room, children }: React.PropsWithChildren<ContextProviderProps>) {
-    const [getStep, { data: getStepResult }] = useLazyQuery(GET_STEP);
-
+export default function ContextProvider({ room, user, children }: React.PropsWithChildren<ContextProviderProps>) {
     const { data: stepChangedEv } = useSubscription(STEP_CHANGED_SUBSCRIPTION);
-    const currentStep = stepChangedEv?.stepChanged.step ?? getStepResult?.step ?? 0;
-
-    React.useEffect(() => {
-        if (hasUser) {
-            getStep();
-        }
-    }, [hasUser, getStep]);
-
-    React.useEffect(() => {
-        if (room) {
-            localStorage.setItem("roomId", room);
-            window.history.pushState(null, "", `/${room}`);
-        }
-    }, [room]);
+    const currentStep = stepChangedEv?.stepChanged.step ?? room?.step ?? 0;
 
     return (
-        <Context.Provider value={{ currentStep, room }}>
+        <Context.Provider value={{ currentStep, user, room }}>
             {children}
         </Context.Provider>
     );

@@ -16,7 +16,6 @@ function startApollo(db) {
             room(id: String!): Room
             users: [User]
             cards: [Card]
-            step: Int
         }
 
         type Mutation {
@@ -48,8 +47,10 @@ function startApollo(db) {
 
         type Room {
             id: String!
+            createdAt: String!
             step: Int
             hasAdmin: Boolean
+            done: Boolean
         }
 
         type Card {
@@ -120,11 +121,15 @@ function startApollo(db) {
             },
             users: async (_, args, context) => await db.collection("users").find({ roomId: context.roomId }).toArray(),
             cards: async (_, args, context) => await db.collection("cards").find({ roomId: context.roomId }).toArray(),
-            step: async (_, args, context) => (await db.collection("rooms").findOne({ id: ObjectId(context.roomId) })).step
         },
         Mutation: {
             createRoom: async () => {
-                const room = { id: ObjectId(), step: 0 };
+                const room = {
+                    id: ObjectId(),
+                    step: 0,
+                    createdAt: new Date(),
+                    done: false
+                };
                 const { result } = await db.collection("rooms").insertOne(room);
                 if (!result.ok) {
                     return new Error("Couldn't create a new room");
@@ -144,7 +149,13 @@ function startApollo(db) {
                 // the first user to join the room, we set the room as
                 // having an administrator, and we assign the ADMIN
                 // room to that user
-                const user = { id: ObjectId(), name: args.username, roomId: context.roomId, role: findRoomRes.hasAdmin ? "PARTICIPANT" : "ADMIN" };
+                const user = {
+                    id: ObjectId(),
+                    name: args.username,
+                    roomId: context.roomId,
+                    role: findRoomRes.hasAdmin ? "PARTICIPANT" : "ADMIN",
+                    createdAt: new Date()
+                };
                 if (!findRoomRes.hasAdmin) {
                     await db.collection("rooms").findOneAndUpdate({ id: ObjectId(context.roomId) }, { $set: { hasAdmin: true } })
                 }
@@ -158,7 +169,13 @@ function startApollo(db) {
                 return user;
             },
             addCard: async (_, args, context) => {
-                const card = { id: ObjectId(), type: args.type, roomId: context.roomId, userId: context.userId };
+                const card = {
+                    id: ObjectId(),
+                    type: args.type,
+                    roomId: context.roomId,
+                    userId: context.userId,
+                    createdAt: new Date()
+                };
                 const { result, ops } = await db.collection("cards").insertOne(card);
                 if (!result.ok) {
                     return new Error("Couldn't create the card");
@@ -210,20 +227,11 @@ function startApollo(db) {
             leaveRoom: async (_, args, context) => {
                 const user = await db.collection("users").findOne({ id: ObjectId(context.userId) });
                 if (user.role === "ADMIN") {
-                    await db.collection("users").deleteMany({});
-                    await db.collection("cards").deleteMany({});
-                    await db.collection("rooms").deleteMany({});
-                } else {
-                    await db.collection("users").deleteOne({ id: ObjectId(context.userId) });
+                    await db.collection("rooms").findOneAndUpdate({ id: ObjectId(user.roomId) }, { $set: { done: true } });
                 }
+                await db.collection("users").deleteOne({ id: ObjectId(context.userId) });
                 await pubsub.publish(USER_LEFT, { userLeft: user });
                 return true;
-            },
-            clearRoom: async () => {
-                const { result: resultForUsers } = await db.collection("users").deleteMany({});
-                const { result: resultForCards } = await db.collection("cards").deleteMany({});
-                const { result: resultForRooms } = await db.collection("rooms").deleteMany({});
-                return resultForUsers.ok && resultForCards.ok && resultForRooms.ok;
             }
         }
     };

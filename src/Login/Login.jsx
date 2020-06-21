@@ -18,7 +18,7 @@ const LOGIN_MUTATION = gql`
     }
 `;
 
-export default function Login({ setHasUser }) {
+export default function Login({ setUser }) {
     const [username, setUsername] = useState('')
     const [login, { data }] = useMutation(LOGIN_MUTATION, { variables: { username }});
 
@@ -26,9 +26,7 @@ export default function Login({ setHasUser }) {
 
     React.useEffect(() => {
         if (data) {
-            localStorage.setItem("userId", data.login.id);
-            localStorage.setItem("userRole", data.login.role);
-            setHasUser(true);
+            setUser(data.login);
         }
     }, [data]);
 

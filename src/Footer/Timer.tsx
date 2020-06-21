@@ -1,15 +1,22 @@
 import * as React from "react";
-import { useTimer } from 'react-timer-hook';
+import moment from "moment";
+import { useTimer } from "react-timer-hook";
+import { Context } from "../Context";
 
 type TimerProps = {
     shouldStart: boolean
-}
+};
 
+// Here, we display a timer during the REVEAL step
+// of a meeting, _or_ the time before the room expires
+// if the meeting is already over
 const Timer = ({ shouldStart }: TimerProps) => {
     const time = new Date();
-    const expiryTimestamp = time.setSeconds(time.getSeconds() + 480); // 10 minutes timer
+    const expiryTimestamp = time.setSeconds(time.getSeconds() + 480); // 8-minute timer
 
     const { seconds, minutes, resume, pause } = useTimer({ expiryTimestamp });
+
+    const { room } = React.useContext(Context);
 
     React.useEffect(() => {
         if (shouldStart) {
@@ -17,11 +24,26 @@ const Timer = ({ shouldStart }: TimerProps) => {
         } else {
             pause();
         }
-    }, [shouldStart]);
+    }, [shouldStart, pause, resume]);
+
+    if (!room) {
+        return null;
+    }
+
+    if (!room.done) {
+        return (
+            <div style={{ fontSize: 14}}>
+                {`${minutes}:${seconds.toString().length === 1 ? `0${seconds}` : seconds}`}
+            </div>
+        );
+    }
+
+    const daysBeforeExpiry = moment(room.createdAt, "x").add(7, "d").diff(moment(time), "days");
+    const expiryText = daysBeforeExpiry === 0 ? 'less than a day' : `${daysBeforeExpiry} day${daysBeforeExpiry === 1 ? '' : 's'}`;
 
     return (
         <div style={{ fontSize: 14 }}>
-            {`${minutes}:${seconds.toString().length === 1 ? `0${seconds}` : seconds}`}
+            <span>The room expires in <b>{expiryText}</b></span>
         </div>
     );
 }

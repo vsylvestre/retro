@@ -1,8 +1,11 @@
 import * as React from "react";
 import { gql } from "apollo-boost";
-import { useLazyQuery } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation } from "@apollo/react-hooks";
+import { useDisclosure } from "@chakra-ui/core";
 import { Context } from "../Context";
+import { UserRole } from "../UserType";
 import useFileDownload from "./useFileDownload";
+import Modal from "../_lib/Modal";
 import Icon from "../_lib/Icon";
 import Button, { ButtonType } from "../_lib/Button";
 import MainAction from "./MainAction";
@@ -21,10 +24,19 @@ const GET_CARDS = gql`
     }
 `;
 
+const LEAVE_ROOM_MUTATION = gql`
+    mutation {
+        leaveRoom
+    }
+`;
+
 export default function Footer() {
     const [loadCards, { data }] = useLazyQuery(GET_CARDS, { fetchPolicy: "network-only" });
+    const [leaveRoom] = useMutation(LEAVE_ROOM_MUTATION, { onCompleted: () => { window.location.pathname = "/" } });
 
-    const { currentStep } = React.useContext(Context);
+    const disclosure = useDisclosure();
+
+    const { currentStep, user } = React.useContext(Context);
 
     useFileDownload(data);
 
@@ -34,12 +46,24 @@ export default function Footer() {
                 <Timer shouldStart={currentStep === Steps.WRITE} />
             </div>
             <div className="footer-right">
+                <Button handleClick={() => user && user.role === UserRole.ADMIN ? disclosure.onOpen() : leaveRoom()}>
+                    Leave room
+                </Button>
                 <Button type={ButtonType.CircularLarge} handleClick={() => loadCards()}>
                     <Icon name="download" size={17} />
                 </Button>
                 <ShareLink />
                 <MainAction currentStep={currentStep} />
             </div>
+            <Modal
+                header="End this meeting?"
+                disclosure={disclosure}
+                handleSubmit={() => leaveRoom()}
+            >
+                You are the admin in this room. Once you leave, the meeting will be
+                considered over, and the content of the room will be saved as is
+                for <b>7 days</b>. Are you sure you want to leave now?
+            </Modal>
         </div>
     );
 }

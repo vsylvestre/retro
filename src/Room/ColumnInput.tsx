@@ -15,7 +15,7 @@ import Steps from "../Steps";
 type ColumnInputProps = {
     submitCard: (card: CardType) => void
     type: string
-}
+};
 
 const ADD_CARD = gql`
     mutation AddCard($type: String!) {
