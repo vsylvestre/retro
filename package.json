@@ -4,7 +4,7 @@
     "description": "A tool for sprint retrospectives.",
     "main": "index.js",
     "author": "Vincent Sylvestre",
-    "license": "MIT",
+    "license": "GPLv3",
     "private": false,
     "scripts": {
         "start": "concurrently \"react-scripts start\" \"node index.js\"",
