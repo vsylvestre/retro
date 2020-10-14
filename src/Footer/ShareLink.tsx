@@ -4,6 +4,7 @@ import {
     Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody, useClipboard
 } from "@chakra-ui/core";
 import Button, { ButtonType } from "../_lib/Button";
+import Tooltip from "../_lib/Tooltip";
 
 export default function ShareLink() {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -19,9 +20,11 @@ export default function ShareLink() {
         <Popover placement="top-end">
             <PopoverTrigger>
                 <div className="button circle large">
-                    <button onClick={onCopy}>
-                        <Icon name="link" size={17} />
-                    </button>
+                    <Tooltip label="Share">
+                        <button onClick={onCopy}>
+                            <Icon name="link" size={17} />
+                        </button>
+                    </Tooltip>
                 </div>
             </PopoverTrigger>
             <PopoverContent
@@ -52,7 +55,7 @@ export default function ShareLink() {
                                 readOnly
                             />
                         </div>
-                        <Button type={ButtonType.Circular} handleClick={() => onCopy && onCopy()}>
+                        <Button type={ButtonType.Circular} tooltip="Copy to clipboard" handleClick={() => onCopy && onCopy()}>
                             <Icon name="clipboard" size={14} />
                         </Button>
                     </div>

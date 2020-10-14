@@ -6,6 +6,7 @@ type InputProps = {
     handleChange: (ev: React.ChangeEvent<HTMLInputElement>) => void
     value: string
     submit?: () => void
+    submitOnEnter?: boolean
     handleFocus?: (ev: React.ChangeEvent<HTMLInputElement>) => void
     header?: string
     placeholder?: string
@@ -23,24 +24,27 @@ const defaultProps = {
  */
 function Input(props: InputProps) {
     const {
-        handleChange, handleFocus, header, placeholder, readonly, submit, value
+        handleChange, handleFocus, header, placeholder, readonly, submit, submitOnEnter = true, value
     } = props;
 
-    const inputRef = React.useRef(null);
+    const inputRef = React.useRef<HTMLInputElement | null>(null);
 
-    const submitOnEnter = (ev: KeyboardEvent) => {
+    const submitOrEscape = (ev: KeyboardEvent) => {
         if (inputRef.current && inputRef.current === document.activeElement) {
-            if (ev.key === "Enter" && !ev.shiftKey) {
-                (inputRef.current as any).blur();
+            if (ev.key === "Enter" && !ev.shiftKey && submitOnEnter) {
+                inputRef.current.blur();
                 submit && submit();
+            }
+            if (ev.key === "Escape" || ev.key === "Esc") {
+                inputRef.current.blur();
             }
         }
     };
 
     React.useEffect(() => {
-        document.addEventListener('keydown', submitOnEnter);
+        document.addEventListener('keydown', submitOrEscape);
         return () => {
-            document.removeEventListener('keydown', submitOnEnter);
+            document.removeEventListener('keydown', submitOrEscape);
         };
     });
 

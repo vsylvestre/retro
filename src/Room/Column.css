@@ -1,6 +1,6 @@
 .column {
-    flex: 1 0 33%;
     padding: 0 15px;
+    transition: 0.2s ease-in-out flex;
 }
 
 .column .column-title {
@@ -11,4 +11,21 @@
     padding: 30px 0 10px;
     border-bottom: 1px solid var(--border-color);
     color: hsl(225, 20%, 61%);
+}
+
+/**
+ * The `flex` property of the column depends on the number of rows,
+ * determined by the parent (see Room.tsx):
+ */
+
+.rows-2 .column {
+    flex: 1 0 50%;
+}
+
+.rows-3 .column {
+    flex: 1 0 33%;
+}
+
+.rows-4 .column {
+    flex: 1 0 25%;
 }

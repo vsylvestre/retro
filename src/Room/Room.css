@@ -3,5 +3,17 @@
     margin: auto;
     margin-top: 100px;
     padding: 0 50px 100px;
+    transition: 0.2s ease-in-out max-width;
+}
+
+.room.rows-2 {
+    max-width: 900px;
+}
+
+.room.rows-3 {
     max-width: 1250px;
+}
+
+.room.rows-4 {
+    max-width: 1400px;
 }

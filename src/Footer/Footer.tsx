@@ -36,7 +36,7 @@ export default function Footer() {
 
     const disclosure = useDisclosure();
 
-    const { currentStep, user } = React.useContext(Context);
+    const { currentStep, user, setShowNotes, showNotes } = React.useContext(Context);
 
     useFileDownload(data);
 
@@ -49,10 +49,23 @@ export default function Footer() {
                 <Button handleClick={() => user && user.role === UserRole.ADMIN ? disclosure.onOpen() : leaveRoom()}>
                     Leave room
                 </Button>
-                <Button type={ButtonType.CircularLarge} handleClick={() => loadCards()}>
+                <Button
+                    type={ButtonType.CircularLarge}
+                    tooltip="Export"
+                    handleClick={() => loadCards()}
+                >
                     <Icon name="download" size={17} />
                 </Button>
                 <ShareLink />
+                {currentStep !== Steps.WAIT && (
+                    <Button
+                        type={showNotes ? ButtonType.CircularLargeEmpty : ButtonType.CircularLarge}
+                        tooltip={showNotes ? "Hide notes" : "Show notes"}
+                        handleClick={() => setShowNotes(!showNotes)}
+                    >
+                        <Icon name="list" size={17} />
+                    </Button>
+                )}
                 <MainAction currentStep={currentStep} />
             </div>
             <Modal

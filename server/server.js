@@ -70,7 +70,7 @@ function startApollo(db) {
                     (payload, _, context) => payload.userJoined.roomId == context.roomId
                 )
             },
-            userLeft : {
+            userLeft: {
                 subscribe: withFilter(
                     () => pubsub.asyncIterator([USER_LEFT]),
                     (payload, _, context) => payload.userLeft.roomId == context.roomId

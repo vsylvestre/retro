@@ -66,7 +66,6 @@ export default function Router(props: RouterProps) {
                 // If the room is archived, we consider that we're at the last step,
                 // regardless of where the meeting was at when it ended
                 const step = getRoomData.room.done ? Steps.REVEAL : getRoomData.room.step;
-                console.log('here');
                 setRoom({ ...getRoomData.room, step });
             } else {
                 setHasError(true);

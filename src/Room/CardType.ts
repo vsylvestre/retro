@@ -1,6 +1,6 @@
 type CardType = {
     id: string
-    text?: string
+    content?: string
     userId?: string
     type?: string
 };

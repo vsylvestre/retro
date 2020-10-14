@@ -1,0 +1,70 @@
+/* TODO: Replace keyframes by framer motion */
+
+@keyframes fade-in-left {
+    0% {
+        opacity: 0;
+        margin-right: -200px;
+    }
+    100% {
+        opacity: 1;
+        margin-right: 0;
+    }
+}
+
+@keyframes fade-out-right {
+    0% {
+        opacity: 1;
+        margin-right: 0;
+    }
+    100% {
+        opacity: 0;
+        margin-right: -200px;
+    }
+}
+
+.column.notes {
+    animation: fade-in-left 0.2s ease-in-out;
+    opacity: 1;
+}
+
+.column.notes.hide {
+    animation: fade-out-right 0.2s ease-in-out;
+    opacity: 0;
+}
+
+.column.notes.stale {
+    animation: none;
+}
+
+.column.notes .card {
+    background-color: hsl(228, 92%, 5%);
+    box-shadow: none;
+    padding-bottom: 25px;
+    white-space: pre-line;
+    line-height: 1.5;
+}
+
+.column.notes .card .card-title {
+    color: hsl(226, 28%, 67%);
+}
+
+.column.notes .card .notes, .column.notes .card .input {
+    position: relative;
+    width: 100%;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.column.notes .card .input {
+    width: 100% !important;
+    padding-right: 0 !important;
+    padding-bottom: 0;
+    padding-top: 3px;
+}
+
+.column.notes .card .input textarea {
+    padding-top: 0;
+    font-size: 16px;
+    line-height: 1.4;
+    color: var(--text-default-color);
+}
