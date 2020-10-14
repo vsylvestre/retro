@@ -13,7 +13,7 @@ type TimerProps = {
 // if the meeting is already over
 const Timer = ({ shouldStart, over }: TimerProps) => {
     const time = new Date();
-    const expiryTimestamp = time.setSeconds(time.getSeconds() + 10); // 8-minute timer
+    const expiryTimestamp = time.setSeconds(time.getSeconds() + 480); // 8-minute timer
 
     const { seconds, minutes, resume, pause } = useTimer({ expiryTimestamp });
 

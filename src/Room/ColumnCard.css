@@ -8,8 +8,8 @@
     line-height: 1.5;
 }
 
-.column .card:first-child {
-    margin: 30px auto;
+.column .card.min {
+    margin-bottom: 30px;
 }
 
 .card.blurry div:not(.tag) {

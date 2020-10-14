@@ -1,7 +1,7 @@
 .room {
     display: flex;
     margin: auto;
-    margin-top: 100px;
+    margin-top: 110px;
     padding: 0 50px 100px;
     transition: 0.2s ease-in-out max-width;
 }
@@ -15,5 +15,5 @@
 }
 
 .room.rows-4 {
-    max-width: 1400px;
+    max-width: 1500px;
 }
