@@ -81,7 +81,7 @@ export default function Users() {
         <div className="users">
             {users.map(user => {
                 const firstChar = user.name.match(/./gu)[0];
-                const firstCharIsEmoji = firstChar.match(/\p{Emoji}/gu); // Yes, this is essential
+                const firstCharIsEmoji = firstChar.match(/\p{Emoji}/gu); // Yes, supporting emojis is essential
                 return (
                     <Tooltip
                         key={user.id}
@@ -94,9 +94,9 @@ export default function Users() {
                         color="var(--text-default-color)"
                     >
                         <div key={user.id} className="user" tabIndex={0}>
-                            {firstCharIsEmoji
-                                ? <span style={{ marginRight: -3 }}>{firstChar}</span>
-                                : firstChar.toUpperCase()}
+                            <span>
+                                {firstCharIsEmoji ? firstChar : firstChar.toUpperCase()}
+                            </span>
                         </div>
                     </Tooltip>
                 );
