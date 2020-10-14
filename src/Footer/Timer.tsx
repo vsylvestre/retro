@@ -5,14 +5,15 @@ import { Context } from "../Context";
 
 type TimerProps = {
     shouldStart: boolean
+    over: boolean
 };
 
 // Here, we display a timer during the REVEAL step
 // of a meeting, _or_ the time before the room expires
 // if the meeting is already over
-const Timer = ({ shouldStart }: TimerProps) => {
+const Timer = ({ shouldStart, over }: TimerProps) => {
     const time = new Date();
-    const expiryTimestamp = time.setSeconds(time.getSeconds() + 480); // 8-minute timer
+    const expiryTimestamp = time.setSeconds(time.getSeconds() + 10); // 8-minute timer
 
     const { seconds, minutes, resume, pause } = useTimer({ expiryTimestamp });
 
@@ -33,7 +34,10 @@ const Timer = ({ shouldStart }: TimerProps) => {
     if (!room.done) {
         return (
             <div style={{ fontSize: 14}}>
-                {`${minutes}:${seconds.toString().length === 1 ? `0${seconds}` : seconds}`}
+                {over
+                    ? "0:00"
+                    : `${minutes < 0 ? 0 : minutes}:${seconds < 0 ? "00" : (seconds.toString().length === 1 ? `0${seconds}` : seconds)}`
+                }
             </div>
         );
     }

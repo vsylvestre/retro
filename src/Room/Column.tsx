@@ -29,7 +29,7 @@ export default function Column({ category }: ColumnProps) {
         if (currentStep === Steps.REVEAL) {
             refetch();
         }
-    }, [currentStep]);
+    }, [currentStep, refetch]);
 
     return (
         <div className={`column ${category.toLowerCase()}`}>

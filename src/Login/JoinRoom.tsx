@@ -37,7 +37,7 @@ export default function JoinRoom({ getRoom, setRoom, hasError }: JoinRoomProps) 
         if (createRoomData) {
             setRoom(createRoomData.createRoom);
         }
-    }, [createRoomData]);
+    }, [createRoomData, setRoom]);
 
     return (
         <animated.div className="menu" style={animationProps}>

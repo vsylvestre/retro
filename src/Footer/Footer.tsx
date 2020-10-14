@@ -43,7 +43,7 @@ export default function Footer() {
     return (
         <div className="footer">
             <div className="footer-left">
-                <Timer shouldStart={currentStep === Steps.WRITE} />
+                <Timer shouldStart={currentStep === Steps.WRITE} over={currentStep === Steps.REVEAL} />
             </div>
             <div className="footer-right">
                 <Button handleClick={() => user && user.role === UserRole.ADMIN ? disclosure.onOpen() : leaveRoom()}>

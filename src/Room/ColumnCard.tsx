@@ -31,7 +31,7 @@ export default function ColumnCard({ id, userId, type, initialText = '' }: CardP
     // We get the current user ID from our context. We will use that
     // to blur cards that don't belong to the current user
     const { user, currentStep } = React.useContext(Context);
-    const belongsToUser = React.useMemo(() => !userId || userId === user?.id, [userId]);
+    const belongsToUser = React.useMemo(() => !userId || userId === user?.id, [userId, user]);
 
     // We also need the current step, in order to know whether
     // we're ready to reveal the cards to all users
@@ -55,7 +55,7 @@ export default function ColumnCard({ id, userId, type, initialText = '' }: CardP
         }
     }, [data]);
 
-    if (initialText.length === 0 && !data || (data && data.cardUpdated.content.length === 0)) {
+    if (initialText.length === 0 && (!data || (data && data.cardUpdated.content.length === 0))) {
         return null;
     }
 
