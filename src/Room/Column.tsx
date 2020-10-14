@@ -43,7 +43,7 @@ export default function Column({ category }: ColumnProps) {
                     id={card.id}
                     userId={card.userId}
                     type={category}
-                    initialText={card.content}
+                    initialText={card.content || ''}
                 />
             ))}
         </div>
