@@ -21,6 +21,12 @@
     font-family: Inter;
 }
 
+.button.empty button {
+    background-color: var(--default-color);
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+}
+
 .button.min button {
     height: 24px;
     font-size: 11px;
@@ -52,6 +58,10 @@
 .button button:hover {
     background-color: var(--accent-color-darker);
     cursor: pointer;
+}
+
+.button.empty button:hover {
+    background-color: var(--secondary-color);
 }
 
 button:focus {

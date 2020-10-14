@@ -8,7 +8,7 @@
     line-height: 1.5;
 }
 
-.column .card.min {
+.column .card:first-child {
     margin: 30px auto;
 }
 

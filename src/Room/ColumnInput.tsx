@@ -1,6 +1,7 @@
 import * as React from "react"
-import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import { Context } from "../Context";
+import Steps from "../Steps";
+import useCardMutations from "./useCardMutations";
 import { Tooltip } from "@chakra-ui/core";
 import Card from "../_lib/Card";
 import Textarea from "../_lib/Textarea";
@@ -9,61 +10,22 @@ import CardType from "./CardType";
 import Icon from "../_lib/Icon";
 
 import "./ColumnInput.css";
-import { Context } from "../Context";
-import Steps from "../Steps";
 
 type ColumnInputProps = {
     submitCard: (card: CardType) => void
     type: string
 };
 
-const ADD_CARD = gql`
-    mutation AddCard($type: String!) {
-        addCard(type: $type) {
-            id
-        }
-    }
-`;
-
-const UPDATE_CARD = gql`
-    mutation UpdateCard($id: String!, $content: String!) {
-        updateCard(id: $id, content: $content) {
-            id
-        }
-    }
-`;
-
 export default function ColumnInput({ submitCard, type }: ColumnInputProps) {
     const { currentStep } = React.useContext(Context);
 
-    const [newCard, setNewCard] = React.useState<CardType | null>(null);
-
-    const [addCard, { data }] = useMutation(ADD_CARD);
-    const [updateCard] = useMutation(UPDATE_CARD);
-
-    React.useEffect(() => {
-        if (data) {
-            setNewCard({ id: data.addCard.id });
-        }
-    }, [data]);
-
-    const createCard = () => {
-        if (!newCard) {
-            addCard({ variables: { type }});
-        }
-    };
-
-    const editCard = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (newCard) {
-            const card = { id: newCard.id, text: ev.target.value };
-            setNewCard(card);
-            updateCard({ variables: { id: card.id, content: card.text } });
-        }
-    };
+    const {
+        newCard, createCard, editCard, reset
+    } = useCardMutations(type);
 
     const submit = () => {
         if (newCard) {
-            setNewCard(null);
+            reset();
             submitCard(newCard);
         }
     };
@@ -94,7 +56,7 @@ export default function ColumnInput({ submitCard, type }: ColumnInputProps) {
                         handleFocus={createCard}
                         submit={submit}
                         placeholder="Start typing here"
-                        value={newCard?.text || ''}
+                        value={newCard?.content ?? ''}
                     />
                     <Button type={ButtonType.Circular} handleClick={submit}>
                         <Icon name="arrow-right" />

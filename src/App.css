@@ -5,7 +5,10 @@
     --accent-color: hsl(227, 63%, 74%);
     --accent-color-darker: hsl(227, 43%, 64%);
 
+    --border-color-lighter: hsl(226, 23%, 30%);
+    --border-color-light: hsl(226, 23%, 16%);
     --border-color: hsla(227, 43%, 64%, 0.16);
+    --border-color-darker: hsla(227, 43%, 64%, 0.12);
 
     --blue-color: hsl(227, 64%, 54%);
     --red-color: hsl(0, 70%, 48%);

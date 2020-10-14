@@ -2,12 +2,16 @@ import * as React from "react";
 import autosize from "autosize";
 
 import "./Textarea.css";
+import { subscribe } from "graphql";
 
 type TextareaProps = {
     handleChange: (ev: React.ChangeEvent<HTMLTextAreaElement>) => void
     value: string
     submit?: () => void
-    handleFocus?: (ev: React.ChangeEvent<HTMLTextAreaElement>) => void
+    submitOnEnter?: boolean
+    handleBlur?: (ev: React.FocusEvent<HTMLTextAreaElement>) => void
+    handleFocus?: (ev: React.FocusEvent<HTMLTextAreaElement>) => void
+    hasFocus?: boolean
     header?: string
     placeholder?: string
 };
@@ -17,26 +21,37 @@ type TextareaProps = {
  * that we don't do any handling of the inserted data at this
  * level, and we expect that the parent takes care of it all
  */
-function Textarea(props: TextareaProps) {
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>((props: TextareaProps, ref) => {
     const {
-        handleChange, handleFocus, header, placeholder, submit, value
+        handleBlur, handleChange, handleFocus, header, placeholder, submit, submitOnEnter = true, value
     } = props;
 
-    const textareaRef = React.useRef(null);
+    const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
 
-    const submitOnEnter = (ev: KeyboardEvent) => {
+    React.useEffect(() => {
+        if (typeof ref === "function") {
+            ref(textareaRef.current);
+        } else if (ref) {
+            ref.current = textareaRef.current;
+        }
+    }, [textareaRef]);
+
+    const submitOrEscape = (ev: KeyboardEvent) => {
         if (textareaRef.current && textareaRef.current === document.activeElement) {
-            if (ev.key === "Enter" && !ev.shiftKey) {
-                (textareaRef.current as any).blur();
+            if (ev.key === "Enter" && !ev.shiftKey && submitOnEnter) {
+                textareaRef.current.blur();
                 submit && submit();
+            }
+            if (ev.key === "Escape" || ev.key === "Esc") {
+                textareaRef.current.blur();
             }
         }
     };
 
     React.useEffect(() => {
-        document.addEventListener('keydown', submitOnEnter);
+        document.addEventListener('keydown', submitOrEscape);
         return () => {
-            document.removeEventListener('keydown', submitOnEnter);
+            document.removeEventListener('keydown', submitOrEscape);
         };
     });
 
@@ -62,6 +77,7 @@ function Textarea(props: TextareaProps) {
             <textarea
                 ref={textareaRef}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 onFocus={handleFocus}
                 placeholder={placeholder}
                 value={value}
@@ -69,6 +85,6 @@ function Textarea(props: TextareaProps) {
             />
         </div>
     );
-}
+});
 
 export default Textarea;
