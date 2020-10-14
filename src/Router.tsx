@@ -52,7 +52,7 @@ export default function Router(props: RouterProps) {
         if (window.location.pathname !== "/") {
             getRoom({ variables: { id: window.location.pathname.substr(1) } });
         }
-    }, []);
+    }, [getRoom]);
 
     React.useEffect(() => {
         if (room) {
@@ -72,7 +72,7 @@ export default function Router(props: RouterProps) {
                 setHasError(true);
             }
         }
-    }, [getRoomData]);
+    }, [getRoomData, setRoom, setHasError, room]);
 
     if (loading) {
         return null;

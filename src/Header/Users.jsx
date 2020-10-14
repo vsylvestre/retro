@@ -51,10 +51,10 @@ export default function Users() {
 
     const [leaveRoom] = useMutation(LEAVE_ROOM_MUTATION);
 
-    function unload(ev) {
+    const unload = React.useCallback((ev) => {
         leaveRoom();
         return null;
-    }
+    }, [leaveRoom]);
 
     React.useEffect(() => {
         window.addEventListener("beforeunload", unload);
@@ -79,22 +79,28 @@ export default function Users() {
 
     return (
         <div className="users">
-            {users.map(user => (
-                <Tooltip
-                    key={user.id}
-                    label={user.name}
-                    aria-label={user.name}
-                    placement="top"
-                    backgroundColor="black"
-                    borderRadius="3px"
-                    fontSize="12px"
-                    color="var(--text-default-color)"
-                >
-                    <div className="user">
-                        {user.name[0].toUpperCase()}
-                    </div>
-                </Tooltip>
-            ))}
+            {users.map(user => {
+                const firstChar = user.name.match(/./gu)[0];
+                const firstCharIsEmoji = firstChar.match(/\p{Emoji}/gu); // Yes, this is essential
+                return (
+                    <Tooltip
+                        key={user.id}
+                        label={user.name}
+                        aria-label={user.name}
+                        placement="bottom"
+                        backgroundColor="black"
+                        borderRadius="3px"
+                        fontSize="12px"
+                        color="var(--text-default-color)"
+                    >
+                        <div key={user.id} className="user" tabIndex={0}>
+                            {firstCharIsEmoji
+                                ? <span style={{ marginRight: -3 }}>{firstChar}</span>
+                                : firstChar.toUpperCase()}
+                        </div>
+                    </Tooltip>
+                );
+            })}
         </div>
     );
 }

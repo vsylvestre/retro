@@ -58,7 +58,7 @@ export default function Column({ category }: ColumnProps) {
         if (currentStep === Steps.REVEAL) {
             refetch();
         }
-    }, [currentStep]);
+    }, [currentStep, refetch]);
 
     React.useEffect(() => {
         if (getCards && getCards.cards) {

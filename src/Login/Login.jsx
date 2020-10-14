@@ -20,7 +20,7 @@ const LOGIN_MUTATION = gql`
 
 export default function Login({ setUser }) {
     const [username, setUsername] = useState('')
-    const [login, { data }] = useMutation(LOGIN_MUTATION, { variables: { username }});
+    const [login, { data }] = useMutation(LOGIN_MUTATION, { variables: { username: username.trim() }});
 
     const animationProps = useSpring({ opacity: 1, from: { opacity: 0 } });
 
@@ -28,7 +28,7 @@ export default function Login({ setUser }) {
         if (data) {
             setUser(data.login);
         }
-    }, [data]);
+    }, [data, setUser]);
 
     return (
         <animated.div className="login" style={animationProps}>
