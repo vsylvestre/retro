@@ -55,7 +55,7 @@
         "subscriptions-transport-ws": "^0.9.16"
     },
     "engines": {
-        "node": "11.10.1"
+        "node": "12.x"
     },
     "browserslist": [
         ">0.2%",
