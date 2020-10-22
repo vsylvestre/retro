@@ -12,21 +12,21 @@ import Room from "./Room/Room";
 import Footer from "./Footer/Footer";
 
 type RouterProps = {
-    room: RoomType | null
-    setRoom: (room: RoomType) => void
-    user: UserType | null
-    setUser: (user: UserType) => void
+  room: RoomType | null;
+  setRoom: (room: RoomType) => void;
+  user: UserType | null;
+  setUser: (user: UserType) => void;
 };
 
 const GET_ROOM = gql`
-    query getRoom($id: String!) {
-        room(id: $id) {
-            id
-            step
-            createdAt
-            done
-        }
+  query getRoom($id: String!) {
+    room(id: $id) {
+      id
+      step
+      createdAt
+      done
     }
+  }
 `;
 
 /**
@@ -38,59 +38,59 @@ const GET_ROOM = gql`
  * It's also here that we find the Room URL logic.
  */
 export default function Router(props: RouterProps) {
-    const {
-        room, setRoom, user, setUser
-    } = props;
+  const { room, setRoom, user, setUser } = props;
 
-    const [getRoom, { data: getRoomData, loading }] = useLazyQuery(GET_ROOM);
+  const [getRoom, { data: getRoomData, loading }] = useLazyQuery(GET_ROOM);
 
-    // We set this to `true` if the room URL or the
-    // room code entered by the user does not exist
-    const [hasError, setHasError] = React.useState(false);
+  // We set this to `true` if the room URL or the
+  // room code entered by the user does not exist
+  const [hasError, setHasError] = React.useState(false);
 
-    React.useEffect(() => {
-        if (window.location.pathname !== "/") {
-            getRoom({ variables: { id: window.location.pathname.substr(1) } });
-        }
-    }, [getRoom]);
-
-    React.useEffect(() => {
-        if (room) {
-            window.history.pushState(null, "", `/${room.id}`);
-        }
-    }, [room]);
-
-    React.useEffect(() => {
-        if (getRoomData && !room) {
-            if (getRoomData.room) {
-                // If the room is archived, we consider that we're at the last step,
-                // regardless of where the meeting was at when it ended
-                const step = getRoomData.room.done ? Steps.REVEAL : getRoomData.room.step;
-                setRoom({ ...getRoomData.room, step });
-            } else {
-                setHasError(true);
-            }
-        }
-    }, [getRoomData, setRoom, setHasError, room]);
-
-    if (loading) {
-        return null;
+  React.useEffect(() => {
+    if (window.location.pathname !== "/") {
+      getRoom({ variables: { id: window.location.pathname.substr(1) } });
     }
+  }, [getRoom]);
 
-    if (!room) {
-        return <JoinRoom setRoom={setRoom} getRoom={getRoom} hasError={hasError} />;
+  React.useEffect(() => {
+    if (room) {
+      window.history.pushState(null, "", `/${room.id}`);
     }
+  }, [room]);
 
-    if (!user) {
-        return <Login setUser={setUser} />;
+  React.useEffect(() => {
+    if (getRoomData && !room) {
+      if (getRoomData.room) {
+        // If the room is archived, we consider that we're at the last step,
+        // regardless of where the meeting was at when it ended
+        const step = getRoomData.room.done
+          ? Steps.REVEAL
+          : getRoomData.room.step;
+        setRoom({ ...getRoomData.room, step });
+      } else {
+        setHasError(true);
+      }
     }
+  }, [getRoomData, setRoom, setHasError, room]);
 
-    return (
-        <>
-            <Users />
-            <Title />
-            <Room categories={["MAD", "SAD", "GLAD"]} />
-            <Footer />
-        </>
-    );
+  if (loading) {
+    return null;
+  }
+
+  if (!room) {
+    return <JoinRoom setRoom={setRoom} getRoom={getRoom} hasError={hasError} />;
+  }
+
+  if (!user) {
+    return <Login setUser={setUser} />;
+  }
+
+  return (
+    <>
+      <Users />
+      <Title />
+      <Room categories={["MAD", "SAD", "GLAD"]} />
+      <Footer />
+    </>
+  );
 }

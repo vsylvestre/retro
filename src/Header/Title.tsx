@@ -4,37 +4,27 @@ import { Context } from "../Context";
 
 import "./Title.css";
 
-function getTitle(currentStep: number) {
-    switch (currentStep) {
-        case Steps.WAIT:
-            return "Waiting to start...";
-        case Steps.WRITE:
-            return "Write";
-        case Steps.REVEAL:
-            return "Read your answers";
-        default:
-            return "?";
-    }
+function getTitle(currentStep: number | null) {
+  switch (currentStep) {
+    case Steps.WAIT:
+      return "Waiting to start...";
+    case Steps.WRITE:
+      return "Time to write";
+    case Steps.REVEAL:
+      return "Time to read your answers";
+    default:
+      return "The meeting is over";
+  }
 }
 
 const Title = () => {
-    const { currentStep, room } = React.useContext(Context);
+  const { currentStep, room } = React.useContext(Context);
 
-    return (
-        <div className="title-container">
-            <div className="title">
-                {room?.done ? "The meeting is over" : (
-                    currentStep === 0 ? getTitle(currentStep) : (
-                        <>
-                            Time to
-                            {" "}
-                            {getTitle(currentStep).toLowerCase()}
-                        </>
-                    )
-                )}
-            </div>
-        </div>
-    );
+  return (
+    <div className="title-container">
+      <div className="title">{getTitle(room?.done ? null : currentStep)}</div>
+    </div>
+  );
 };
 
 export default Title;
