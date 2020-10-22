@@ -1,7 +1,7 @@
 enum Steps {
-    WAIT,
-    WRITE,
-    REVEAL
+  WAIT,
+  WRITE,
+  REVEAL,
 }
 
 export default Steps;
