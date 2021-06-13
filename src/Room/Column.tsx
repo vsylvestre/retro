@@ -44,6 +44,7 @@ export default function Column({ category }: ColumnProps) {
                     userId={card.userId}
                     type={category}
                     initialText={card.content || ''}
+                    initialReactions={card.reactions}
                 />
             ))}
         </div>

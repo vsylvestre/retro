@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSubscription, useQuery, useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
-import { Tooltip } from "@chakra-ui/core";
+import Tooltip from "../_lib/Tooltip";
 
 import "./Users.css";
 
@@ -86,12 +86,7 @@ export default function Users() {
                     <Tooltip
                         key={user.id}
                         label={user.name}
-                        aria-label={user.name}
                         placement="bottom"
-                        backgroundColor="black"
-                        borderRadius="3px"
-                        fontSize="12px"
-                        color="var(--text-default-color)"
                     >
                         <div key={user.id} className="user" tabIndex={0}>
                             <span>

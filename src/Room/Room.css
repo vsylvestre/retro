@@ -1,8 +1,8 @@
 .room {
     display: flex;
     margin: auto;
-    margin-top: 110px;
-    padding: 0 50px 100px;
+    padding: 110px 50px 100px;
+    min-height: calc(100vh - 64px);
     transition: 0.2s ease-in-out max-width;
 }
 

@@ -1,8 +1,12 @@
 import * as React from "react";
 import { gql } from "apollo-boost";
-import { useSubscription, useMutation } from "@apollo/react-hooks";
+import { useSubscription } from "@apollo/react-hooks";
+import { Popover, PopoverTrigger, Portal } from "@chakra-ui/react";
 import { Context } from "../Context";
-import Icon from "../_lib/Icon";
+import { CardReaction } from "./CardType";
+import ColumnCardPopover from "./ColumnCardPopover";
+import ColumnCardReactions from "./ColumnCardReactions";
+import ColumnCardOptions from "./ColumnCardOptions";
 
 import "./ColumnCard.css";
 
@@ -11,6 +15,7 @@ type CardProps = {
     type: string
     userId?: string
     initialText?: string
+    initialReactions?: CardReaction[]
 };
 
 const CARD_UPDATED_SUBSCRIPTION = gql`
@@ -21,13 +26,7 @@ const CARD_UPDATED_SUBSCRIPTION = gql`
     }
 `;
 
-const DELETE_CARD_MUTATION = gql`
-    mutation DeleteCard($id: String!) {
-        deleteCard(id: $id)
-    }
-`;
-
-export default function ColumnCard({ id, userId, type, initialText = '' }: CardProps) {
+export default function ColumnCard({ id, userId, type, initialReactions, initialText = '' }: CardProps) {
     // We get the current user ID from our context. We will use that
     // to blur cards that don't belong to the current user
     const { user, currentStep } = React.useContext(Context);
@@ -44,10 +43,24 @@ export default function ColumnCard({ id, userId, type, initialText = '' }: CardP
     // for updates on _this_ card
     const [text, setText] = React.useState(initialText);
 
+    // We're using the popover in fully-controlled mode. This is to
+    // better manage whether it should be open when the "options"
+    // dropdown is also open.
+    const [isPopoverOpen, setIsPopoverOpen] = React.useState<boolean | undefined>(undefined);
+    const [isMenuOpen, setIsMenuOpen] = React.useState<boolean>(false);
+
+    const onMenuOpen = () =>{
+        setIsMenuOpen(true);
+        setIsPopoverOpen(false);
+    };
+
+    const onMenuClose = () => {
+        setIsMenuOpen(false);
+        setIsPopoverOpen(false);
+    };
+
     // Here we subscribe to updates on the card
     const { data } = useSubscription(CARD_UPDATED_SUBSCRIPTION, { variables: { id } });
-
-    const [deleteCard] = useMutation(DELETE_CARD_MUTATION, { variables: { id } });
 
     React.useEffect(() => {
         if (data) {
@@ -68,14 +81,42 @@ export default function ColumnCard({ id, userId, type, initialText = '' }: CardP
         );
 
     return (
-        <div key={id} className={`card${!belongsToUser && blurred ? ' blurry' : ''}`} style={{ width: "95%" }}>
-            {belongsToUser && (
-                <button className="card-delete" style={{ backgroundColor: "transparent", border: "none" }} onClick={() => deleteCard()}>
-                    <Icon name="trash" />
-                </button>
-            )}
-            <div className="tag">{type}</div>
-            <div style={{ paddingTop: 10, wordBreak: "break-word" }}>{blurred ? shuffledText : text}</div>
-        </div>
+        <Popover 
+            isOpen={isPopoverOpen && !isMenuOpen && !blurred}
+            placement="bottom" 
+            trigger="hover" 
+            gutter={-24} 
+        >
+            <div onMouseEnter={() => setIsPopoverOpen(true)} onMouseLeave={() => setIsPopoverOpen(false)}>
+                <PopoverTrigger>
+                    <div
+                        key={id} 
+                        className={`card${!belongsToUser && blurred ? ' blurry' : ''}`} 
+                        style={{ width: "95%" }} 
+                        tabIndex={0}
+                    >
+                        {blurred && !belongsToUser ? null : (
+                            <ColumnCardOptions
+                                cardId={id}
+                                cardText={text}
+                                belongsToUser={belongsToUser}
+                                onOpen={onMenuOpen} 
+                                onClose={onMenuClose} 
+                            />
+                        )}
+                        <ColumnCardReactions cardId={id} initialReactions={initialReactions} />
+                        <div className="tag">
+                            {type}
+                        </div>
+                        <div style={{ paddingTop: 10, wordBreak: "break-word" }}>
+                            {blurred ? shuffledText : text}
+                        </div>
+                    </div>
+                </PopoverTrigger>
+                <Portal>
+                    <ColumnCardPopover cardId={id} />
+                </Portal>
+            </div>
+        </Popover>
     );
 }

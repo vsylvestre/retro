@@ -1,6 +1,7 @@
 :root {
     --primary-color: hsl(227, 71%, 11%);
     --secondary-color: hsl(230, 38%, 20%);
+    --tertiary-color: hsl(227, 29%, 26%);
 
     --accent-color: hsl(227, 63%, 74%);
     --accent-color-darker: hsl(227, 43%, 64%);

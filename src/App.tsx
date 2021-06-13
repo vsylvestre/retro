@@ -1,6 +1,5 @@
 import React from "react";
 import { ApolloProvider } from "@apollo/react-hooks";
-import { ThemeProvider, DarkMode } from "@chakra-ui/core";
 import RoomType from "./Room/RoomType";
 import UserType from "./UserType";
 import ContextProvider from "./Context";
@@ -19,17 +18,13 @@ export default function App() {
     return (
         <ApolloProvider client={client}>
             <ContextProvider room={room} user={user}>
-                <ThemeProvider>
-                    <DarkMode>
-                        <Header />
-                        <Router
-                            room={room}
-                            setRoom={setRoom}
-                            user={user}
-                            setUser={setUser}
-                        />
-                    </DarkMode>
-                </ThemeProvider>
+                <Header />
+                <Router
+                    room={room}
+                    setRoom={setRoom}
+                    user={user}
+                    setUser={setUser}
+                />
             </ContextProvider>
         </ApolloProvider>
     );

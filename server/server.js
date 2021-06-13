@@ -9,6 +9,7 @@ function startApollo(db) {
     const CARD_ADDED = "CARD_ADDED";
     const CARD_UPDATED = "CARD_UPDATED";
     const CARD_DELETED = "CARD_DELETED";
+    const REACTIONS_CHANGED = "REACTIONS_CHANGED";
     const STEP_CHANGED = "STEP_CHANGED";
 
     const typeDefs = gql`
@@ -24,6 +25,7 @@ function startApollo(db) {
             addCard(type: String!): Card
             updateCard(id: String!, content: String!): Card
             deleteCard(id: String!): String
+            react(cardId: String!, type: String!): Boolean
             switchSteps: Boolean
             leaveRoom: Boolean
             clearRoom: Boolean
@@ -35,6 +37,7 @@ function startApollo(db) {
             cardAdded(userId: String!, type: String!): Card
             cardUpdated(id: String!): Card
             cardDeleted(type: String!): Card
+            reactionsChanged(cardId: String!): PartialCard
             stepChanged: Room
         }
 
@@ -53,12 +56,23 @@ function startApollo(db) {
             done: Boolean
         }
 
+        type Reaction {
+            userId: String!
+            type: String!
+        }
+
         type Card {
             id: String!
             type: String!
             roomId: String!
             userId: String
             content: String
+            reactions: [Reaction]
+        }
+
+        type PartialCard {
+            id: String!
+            reactions: [Reaction]
         }
     `;
 
@@ -98,6 +112,12 @@ function startApollo(db) {
                         const { roomId, type } = payload.cardDeleted;
                         return type === variables.type && roomId == context.roomId;
                     }
+                )
+            },
+            reactionsChanged: {
+                subscribe: withFilter(
+                    () => pubsub.asyncIterator([REACTIONS_CHANGED]),
+                    (payload, variables) => payload.reactionsChanged.id === variables.cardId
                 )
             },
             stepChanged: {
@@ -174,7 +194,8 @@ function startApollo(db) {
                     type: args.type,
                     roomId: context.roomId,
                     userId: context.userId,
-                    createdAt: new Date()
+                    createdAt: new Date(),
+                    reactions: [],
                 };
                 const { result, ops } = await db.collection("cards").insertOne(card);
                 if (!result.ok) {
@@ -195,7 +216,8 @@ function startApollo(db) {
                     type: result.value.type,
                     userId: result.value.userId,
                     roomId: result.value.roomId,
-                    content: args.content
+                    content: args.content,
+                    reactions: result.value.reactions,
                 };
                 // We publish a CARD_UPDATED event so that other users see
                 // the card be updated on their side
@@ -212,6 +234,25 @@ function startApollo(db) {
                 // the card disappear on their side
                 await pubsub.publish(CARD_DELETED, { cardDeleted: card });
                 return args.id;
+            },
+            react: async (_, args, context) => {
+                const currentCard = await db.collection("cards").findOne({ id: ObjectId(args.cardId) });
+                const userHasReaction = currentCard.reactions.find(reaction => reaction.userId === context.userId);
+                const removeReaction = userHasReaction && userHasReaction.type === args.type;
+                const reactions = [
+                    ...currentCard.reactions.filter(reaction => reaction.userId !== context.userId), 
+                    !removeReaction && { userId: context.userId, type: args.type }
+                ].filter(Boolean);
+                const result = await db.collection("cards").findOneAndUpdate({ id: ObjectId(args.cardId) }, { $set: { reactions } }, { returnNewDocument: true });
+                if (!result.ok) {
+                    return new Error("Couldn't react");
+                }
+                const card = {
+                    id: result.value.id.toString(),
+                    reactions,
+                };
+                await pubsub.publish(REACTIONS_CHANGED, { reactionsChanged: card });
+                return true;
             },
             switchSteps: async (_, args, context) => {
                 const result = await db.collection("rooms").findOneAndUpdate({ id: ObjectId(context.roomId) }, { $inc: { step: 1 }});

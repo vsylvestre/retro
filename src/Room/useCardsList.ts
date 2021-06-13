@@ -18,6 +18,10 @@ const GET_CARDS = gql`
             type
             userId
             content
+            reactions {
+                type
+                userId
+            }
         }
     }
 `;
