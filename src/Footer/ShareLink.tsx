@@ -1,14 +1,21 @@
 import * as React from "react";
 import Icon from "../_lib/Icon";
 import {
-    Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody, useClipboard
-} from "@chakra-ui/core";
+    Popover, 
+    PopoverTrigger,
+    PopoverContent, 
+    PopoverArrow, 
+    PopoverCloseButton, 
+    PopoverHeader, 
+    PopoverBody, 
+    useClipboard,
+} from "@chakra-ui/react";
 import Button, { ButtonType } from "../_lib/Button";
 import Tooltip from "../_lib/Tooltip";
 
 export default function ShareLink() {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
-    const { onCopy, hasCopied } = useClipboard(window.location);
+    const { onCopy, hasCopied } = useClipboard(window.location.toString());
 
     React.useEffect(() => {
         if (hasCopied && inputRef.current) {
@@ -32,20 +39,22 @@ export default function ShareLink() {
                 maxWidth="none"
                 backgroundColor="var(--secondary-color)"
                 boxShadow="var(--default-box-shadow)"
-                padding="8px"
+                padding={24}
+                borderRadius={8}
             >
                 <PopoverArrow />
                 <PopoverCloseButton
                     border="none"
                     background="transparent"
                     color="var(--accent-color)"
+                    right="0.25rem"
                 />
                 <PopoverHeader fontSize={13}>
                     <div style={{ paddingRight: 30 }}>
                         The link to the room was copied to your clipboard.
                     </div>
                 </PopoverHeader>
-                <PopoverBody paddingTop={0}>
+                <PopoverBody paddingTop={8}>
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <div className="input" style={{ padding: 0 }}>
                             <input

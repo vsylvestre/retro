@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Modal as ChakraModal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from "@chakra-ui/core";
-import { UseDisclosureReturn } from "@chakra-ui/core/dist/useDisclosure";
+import { Modal as ChakraModal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter } from "@chakra-ui/react";
+import { UseDisclosureReturn } from "@chakra-ui/react";
 import Button from "./Button";
 
 import "./Modal.css";

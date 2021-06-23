@@ -2,7 +2,7 @@ import * as React from "react"
 import { Context } from "../Context";
 import Steps from "../Steps";
 import useCardMutations from "./useCardMutations";
-import { Tooltip } from "@chakra-ui/core";
+import Tooltip from "../_lib/Tooltip";
 import Card from "../_lib/Card";
 import Textarea from "../_lib/Textarea";
 import Button, { ButtonType } from "../_lib/Button";
@@ -36,15 +36,10 @@ export default function ColumnInput({ submitCard, type }: ColumnInputProps) {
                 {type[0] + type.substr(1).toLowerCase()}
             </div>
             {currentStep === Steps.WAIT ? (
-                <div style={{ width: "100%", fontSize: 25, textAlign: "right", marginTop: -42 }}>
+                <div style={{ width: "100%", fontSize: 25, textAlign: "right", marginTop: -45 }}>
                     <Tooltip
                         label="We're waiting to start!"
-                        aria-label="Waiting to start"
                         placement="left"
-                        backgroundColor="black"
-                        borderRadius="3px"
-                        fontSize="13px"
-                        color="var(--text-default-color)"
                     >
                         ⏱
                     </Tooltip>

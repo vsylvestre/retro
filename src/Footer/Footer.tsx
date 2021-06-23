@@ -1,7 +1,7 @@
 import * as React from "react";
 import { gql } from "apollo-boost";
 import { useLazyQuery, useMutation } from "@apollo/react-hooks";
-import { useDisclosure } from "@chakra-ui/core";
+import { useDisclosure } from "@chakra-ui/react";
 import { Context } from "../Context";
 import { UserRole } from "../UserType";
 import useFileDownload from "./useFileDownload";

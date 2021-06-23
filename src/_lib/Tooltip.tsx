@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Tooltip as ChakraTooltip } from "@chakra-ui/core";
+import { Tooltip as ChakraTooltip } from "@chakra-ui/react";
 
 type TooltipProps = {
     children: React.ReactNode
@@ -13,9 +13,10 @@ const Tooltip = ({ children, label, placement = "top" }: TooltipProps) => (
         aria-label={label}
         placement={placement}
         backgroundColor="black"
-        borderRadius="3px"
+        borderRadius="4px"
         fontSize="13px"
         color="var(--text-default-color)"
+        padding="4px 8px"
     >
         {children}
     </ChakraTooltip>
