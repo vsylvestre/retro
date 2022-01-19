@@ -68,3 +68,7 @@ button:focus {
     outline-color: hsl(208, 52%, 53%);
     outline-width: 3px;
 }
+
+button:disabled {
+    opacity: 0.3;
+}

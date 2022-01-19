@@ -20,7 +20,8 @@ function startApollo(db) {
         }
 
         type Mutation {
-            createRoom: Room
+            createRoom(type: String): Room
+            selectRoomType(type: String!): Room
             login(username: String!): User
             addCard(type: String!): Card
             updateCard(id: String!, content: String!): Card
@@ -54,6 +55,7 @@ function startApollo(db) {
             step: Int
             hasAdmin: Boolean
             done: Boolean
+            type: String
         }
 
         type Reaction {
@@ -143,17 +145,33 @@ function startApollo(db) {
             cards: async (_, args, context) => await db.collection("cards").find({ roomId: context.roomId }).toArray(),
         },
         Mutation: {
-            createRoom: async () => {
+            createRoom: async (_, args) => {
                 const room = {
                     id: ObjectId(),
                     step: 0,
                     createdAt: new Date(),
-                    done: false
+                    done: false,
+                    type: args.type || 'MAD_SAD_GLAD'
                 };
                 const { result } = await db.collection("rooms").insertOne(room);
                 if (!result.ok) {
                     return new Error("Couldn't create a new room");
                 }
+                return room;
+            },
+            selectRoomType: async (_, args, context) => {
+                const result = await db.collection("rooms").findOneAndUpdate({ id: ObjectId(context.roomId) }, { $set: { type: args.type } }, { returnNewDocument: true });
+                if (!result.ok) {
+                    return new Error("Couldn't update the room type");
+                }
+                const room = {
+                    id: result.value.id,
+                    createdAt: result.value.createdAt,
+                    step: result.value.step,
+                    hasAdmin: result.value.hasAdmin,
+                    done: result.value.done,
+                    type: args.type,
+                };
                 return room;
             },
             login: async (_, args, context) => {

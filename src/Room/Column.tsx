@@ -34,7 +34,7 @@ export default function Column({ category }: ColumnProps) {
     return (
         <div className={`column ${category.toLowerCase()}`}>
             <ColumnInput
-                submitCard={card => setCards([card, ...(cards || [])])}
+                submitCard={card => setCards([card, ...(cards || [])])}
                 type={category}
             />
             {(cards || []).map(card => (

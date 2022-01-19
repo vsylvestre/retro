@@ -87,7 +87,7 @@ export default function ColumnCard({ id, userId, type, initialReactions, initial
             trigger="hover" 
             gutter={-24} 
         >
-            <div onMouseEnter={() => setIsPopoverOpen(true)} onMouseLeave={() => setIsPopoverOpen(false)}>
+            <div onMouseEnter={() => setIsPopoverOpen(true)} onMouseLeave={() => setIsPopoverOpen(false)}>
                 <PopoverTrigger>
                     <div
                         key={id} 
