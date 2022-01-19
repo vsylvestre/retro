@@ -13,9 +13,9 @@ import Footer from "./Footer/Footer";
 
 type RouterProps = {
     room: RoomType | null
-    setRoom: (room: RoomType) => void
+    setRoom: (room: RoomType) => void
     user: UserType | null
-    setUser: (user: UserType) => void
+    setUser: (user: UserType) => void
 };
 
 const GET_ROOM = gql`
@@ -25,9 +25,23 @@ const GET_ROOM = gql`
             step
             createdAt
             done
+            type
+            hasAdmin
         }
     }
 `;
+
+const getRoomCategories = (type: string) => {
+    switch (type) {
+        case 'START_STOP_CONTINUE':
+            return ['STOP', 'CONTINUE', 'START'];
+        case 'HAPPY_CONFUSED_SAD':
+            return ['SAD', 'CONFUSED', 'HAPPY'];
+        case 'MAD_SAD_GLAD':
+        default:
+            return ['MAD', 'SAD', 'GLAD'];
+    }
+}
 
 /**
  * This Router is a bit rudimentary because we don't
@@ -50,7 +64,7 @@ export default function Router(props: RouterProps) {
 
     React.useEffect(() => {
         if (window.location.pathname !== "/") {
-            getRoom({ variables: { id: window.location.pathname.substr(1) } });
+            getRoom({ variables: { id: window.location.pathname.substr(1) } });
         }
     }, [getRoom]);
 
@@ -71,7 +85,7 @@ export default function Router(props: RouterProps) {
                 setHasError(true);
             }
         }
-    }, [getRoomData, setRoom, setHasError, room]);
+    }, [getRoomData, setRoom, setHasError, room]);
 
     if (loading) {
         return null;
@@ -82,14 +96,20 @@ export default function Router(props: RouterProps) {
     }
 
     if (!user) {
-        return <Login setUser={setUser} />;
+        return (
+            <Login 
+                setUser={setUser} 
+                setRoomType={(type: string) => setRoom({ ...room, type })}
+                isNewRoom={!room.hasAdmin && room.step === 0} 
+            />
+        );
     }
 
     return (
         <>
             <Users />
             <Title />
-            <Room categories={["MAD", "SAD", "GLAD"]} />
+            <Room categories={getRoomCategories(room.type)} />
             <Footer />
         </>
     );

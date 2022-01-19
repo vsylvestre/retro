@@ -16,9 +16,10 @@ type ButtonProps = {
     children: React.ReactNode
     tooltip?: string
     type?: ButtonType
+    disabled?: boolean
 };
 
-const Button = ({ handleClick, tooltip, type, children }: ButtonProps) => {
+const Button = ({ handleClick, tooltip, type, disabled, children }: ButtonProps) => {
     const classNames = [
         "button",
         type === ButtonType.Small && "min",
@@ -29,7 +30,7 @@ const Button = ({ handleClick, tooltip, type, children }: ButtonProps) => {
 
     const button = (
         <div className={classNames.join(" ")}>
-            <button onClick={handleClick}>
+            <button onClick={handleClick} disabled={disabled}>
                 {children}
             </button>
         </div>
