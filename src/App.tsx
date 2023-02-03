@@ -1,31 +1,40 @@
 import React from "react";
-import { ApolloProvider } from "@apollo/react-hooks";
-import RoomType from "./Room/RoomType";
-import UserType from "./UserType";
-import ContextProvider from "./Context";
-import useApolloClient from "./useApolloClient";
+import { Flex } from "@chakra-ui/react";
+import styled from "@emotion/styled";
 import Header from "./Header/Header";
-import Router from "./Router";
+import Card from "./Card";
 
 import "./App.css";
 
-export default function App() {
-    const [room, setRoom] = React.useState<RoomType | null>(null);
-    const [user, setUser] = React.useState<UserType | null>(null);
+const StyledFlex = styled(Flex)`
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
 
-    const client = useApolloClient(user ? user.id : null, room ? room.id : null);
+    .card {
+        text-align: center;
+
+        h1 {
+            margin-top: 8px;
+        }
+
+        a {
+            color: var(--accent-color);
+        }
+    }
+`;
+
+export default function App() {
 
     return (
-        <ApolloProvider client={client}>
-            <ContextProvider room={room} user={user}>
-                <Header />
-                <Router
-                    room={room}
-                    setRoom={setRoom}
-                    user={user}
-                    setUser={setUser}
-                />
-            </ContextProvider>
-        </ApolloProvider>
+        <StyledFlex>
+            <Header />
+            <Card>
+                <h1>📦 Rétro moved!</h1>
+                <p style={{ marginBottom: 0, lineHeight: 1.3 }}>
+                    Go to <a href="https://retro.up.railway.app/">https://retro.up.railway.app/</a> to get access to Rétro.
+                </p>
+            </Card>
+        </StyledFlex>
     );
 }
